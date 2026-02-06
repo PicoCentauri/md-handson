@@ -1,13 +1,15 @@
-# Molecular Dynamics Engine Hands-on Tutorial
+# Molecular Dynamics Engine Hands-on Tutorial 🔬
 
-This hands-on session introduces three MD engines through short, guided exercises on the Kuma cluster. You will run the same ML potential with different engines and compare workflows, performance, and outputs.
+This hands-on session introduces three MD engines through short, guided exercises on the Kuma cluster. You'll run the same ML potential with different engines and compare workflows, performance, and outputs.
 
 Before asking the instructor for help, try:
-- A quick web search
-- Asking an LLM
-- Discussing with your partner
+- A quick web search 🔍
+- Asking an LLM 🤖
+- Discussing with your partner 💬
 
-## Session setup
+Remember: debugging is part of the learning process, so don't stress if things don't work immediately!
+
+## Session setup ⚙️
 
 Start an interactive Slurm session:
 
@@ -15,7 +17,7 @@ Start an interactive Slurm session:
 srun --time=02:00:00 --nodes=1 --ntasks=1 --mem-per-gpu=90G --gres=gpu:1 --partition=l40 --pty /bin/bash
 ```
 
-This starts a 2-hour interactive session with one node, one task, one GPU, and 90 GB GPU memory on the `l40` partition, and opens a shell on the allocated node.
+**What's happening?** This starts a 2-hour interactive session with one node, one task, one GPU, and 90 GB GPU memory on the `l40` partition, and opens a bash shell on the allocated node. Time to get your hands dirty! 🚀
 
 Load modules:
 
@@ -39,26 +41,26 @@ Fetch the PET ML potential once in the repo root:
 mtt export https://huggingface.co/lab-cosmo/upet/resolve/main/models/pet-mad-s-v1.0.2.ckpt -o model.pt
 ```
 
-You will symlink or copy `model.pt` into each engine folder as needed.
+**What's this?** We're downloading a pre-trained ML potential from HuggingFace. You'll symlink or copy `model.pt` into each engine folder as needed. One model, three engines! 🎯
 
-Reference solutions are available in the `solutions/` folder.
+Reference solutions are available in the `solutions/` folder (but try solving it yourself first! 😉).
 
-## Simulation conditions
+## Simulation conditions 🌡️
 
-The PET-MAD potential is trained with PBE-sol reference data, so we run the simulations at 450 K in this hands-on. Instantaneous temperature and pressure fluctuate strongly in MD; only time-averaged values should match the target conditions.
+The PET-MAD potential is trained with PBE-sol reference data, so we're running simulations at 450 K in this hands-on. Just remember: instantaneous temperature and pressure jump around like crazy in MD – only time-averaged values should match the target conditions!
 
-## What is a topology?
+## What is a topology? 🔗
 
-In MD, a topology describes how atoms are connected and which interaction parameters apply. It typically includes bonded terms (bonds, angles, dihedrals) and nonbonded parameters (charges, atom types). The structure file provides coordinates, while the topology provides the force field definition.
+In MD, a topology describes how atoms are connected and which interaction parameters apply. Think of it as the "rulebook" for your system. It typically includes bonded terms (bonds, angles, dihedrals) and nonbonded parameters (charges, atom types). The structure file gives you the coordinates (where things are), while the topology provides the force field definition (how they interact).
 
-## Why not use ASE for MD here?
+## Why not use ASE for MD here? 🤔
 
-ASE is excellent for prototyping and single-point calculations, but it is not optimized for long, high-performance MD runs. MD engines provide faster kernels, more flexible integration schemes, and better-tested thermostat and barostat implementations. For this session, we focus on engine-level workflows and performance rather than high-level wrappers.
+ASE is excellent for prototyping and single-point calculations, but it's not optimized for long, high-performance MD runs. Think of it like using a bicycle vs. a race car – both work, but one is way faster for the track! MD engines provide faster kernels, more flexible integration schemes, and better-tested thermostat and barostat implementations. For this session, we're focusing on engine-level workflows and performance rather than high-level wrappers.
 
-## Engine overview
+## Engine overview 🎮
 
 | Engine | Focus | Why it matters |
 | --- | --- | --- |
-| LAMMPS | Materials workhorse, GPU performance | Flexible input scripts and scalable performance |
-| i-PI | Advanced sampling, PIMD | Decouples force engines and enables path integrals |
-| GROMACS | Biomolecular MD, ML/MM | Mature bio workflows with hybrid ML/MM support |
+| LAMMPS 💪 | Materials workhorse, GPU performance | Flexible input scripts and scalable performance |
+| i-PI 🐍 | Advanced sampling, PIMD | Decouples force engines and enables path integrals |
+| GROMACS 🧬 | Biomolecular MD, ML/MM | Mature bio workflows with hybrid ML/MM support |
