@@ -12,14 +12,10 @@ Before asking the instructor for help, try:
 Start an interactive Slurm session:
 
 ```
-#!/bin/bash
-#SBATCH --nodes 1
-#SBATCH --ntasks 1
-#SBATCH --mem-per-gpu=90G
-#SBATCH --time 02:00:00
-#SBATCH --gres=gpu:1
-#SBATCH --partition=l40
+srun --time=02:00:00 --nodes=1 --ntasks=1 --mem-per-gpu=90G --gres=gpu:1 --partition=l40 --pty /bin/bash
 ```
+
+This starts a 2-hour interactive session with one node, one task, one GPU, and 90 GB GPU memory on the `l40` partition, and opens a shell on the allocated node.
 
 Load modules:
 
