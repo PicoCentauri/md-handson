@@ -1,0 +1,21 @@
+units metal
+atom_style atomic
+
+read_restart npt.restart
+
+pair_style metatomic &
+    model.pt &
+    uncertainty_threshold off
+
+pair_coeff * * 1 8
+
+neighbor 2.0 bin
+timestep 0.0005
+
+thermo 100
+
+fix 1 all nve
+dump traj all custom 100 prod.lammpstrj id type x y z
+dump_modify traj sort id
+
+run 10000

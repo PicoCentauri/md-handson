@@ -1,0 +1,20 @@
+units metal
+atom_style atomic
+
+read_data water.data
+
+pair_style metatomic &
+    model.pt &
+    uncertainty_threshold off
+
+pair_coeff * * 1 8
+
+neighbor 2.0 bin
+timestep 0.0005
+
+thermo 50
+
+min_style cg
+minimize 1e-6 1e-8 1000 10000
+
+write_restart em.restart
