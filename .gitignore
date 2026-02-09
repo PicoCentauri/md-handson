@@ -1,5 +1,14 @@
 .venv/
+
+# lammps
 log.lammps
-*restart
+*.restart
 model.pt
-*lammpstrj
+*.lammpstrj
+
+# gromacs
+*.gro
+*.itp
+*.top
+mdout.mdp
+\#*

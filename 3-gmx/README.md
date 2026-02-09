@@ -18,7 +18,24 @@ GROMACS splits the workflow into multiple file types: a structure file (`.gro`),
 
 We use alanine dipeptide, a small biomolecular model system with two peptide bonds. It's basically the "hello world" of biomolecular simulations – simple enough to run quickly, but still shows meaningful conformational changes. Perfect for learning bio-style workflows even if proteins aren't usually your thing!
 
-<!-- Add ascii art of the dipeptide and encourage people to visualize it with chemiscope or ovito -->
+```
+        Alanine Dipeptide Structure (ACE-ALA-NME)
+        
+         ACE              ALA              NME
+     (capping)        (residue)        (capping)
+    
+         O               O                O
+         ‖               ‖                ‖
+    H₃C-C-NH--Cα--C--NH-Cα-C--NH-CH₃
+              |         |
+              CH₃       H
+         
+         ^^^^^^^^^     ^^^^^^^^^  
+       peptide bond 1  peptide bond 2
+
+```
+
+> **Visualization tip** 💡: Open `alanine-dipeptide.pdb` in [chemiscope](https://chemiscope.org/) or [OVITO](https://www.ovito.org/) to see the actual 3D structure!
 
 ## Files
 
@@ -66,14 +83,27 @@ $GMX pdb2gmx -f alanine-dipeptide.pdb -o dipeptide.gro -p topol.top -i posre.itp
 
 ### 2. Define a box and solvate 💧
 
-<!-- add ascii arte of the process: show box creation centering -->
+We now need to put our molecule in a box and fill it with water. This is crucial for MD because we want to simulate a realistic environment. The commands are:
 
 ```
-$GMX editconf -f dipeptide.gro -o boxed.gro -c -d 1.0 -bt cubic
+$GMX editconf -f dipeptide.gro -o boxed.gro -c -d 0.4 -bt cubic
 $GMX solvate -cp boxed.gro -cs spc216.gro -o solvated.gro -p topol.top
 ```
 
 **What's happening here?** 
+
+```
+       🧬                            ┌─────────────┐              ┌─────────────┐
+      /  \                           │             │              │ ○  ○    ○   │
+     /    \                          │             │              │    ○  ○     │
+    🧬─────🧬        ──────>          │   ← d=0.4nm→│   ──────>    │ ○   🧬   ○  │
+         \                           │      🧬      │              │  ○ /  \ ○   │
+          🧬                          │     /  \    │              │ ○ 🧬───🧬 ○ │
+                                     │    🧬───🧬   │              │   ○ ○  ○ ○ │
+                                     │             │              │ ○   ○   ○  │
+                                     └─────────────┘              └─────────────┘
+```
+
 - `editconf`: Creates a simulation box around your molecule. The `-c` flag centers the molecule, `-d 1.0` puts the box edges 1.0 nm away from the molecule (so it doesn't see its own periodic image), and `-bt cubic` makes it a cube.
 - `solvate`: Fills the box with water molecules! It takes a pre-equilibrated water box (`spc216.gro`) and places water molecules wherever they fit around your solute. It also updates `topol.top` to include all those water molecules in the topology.
 
@@ -85,6 +115,8 @@ $GMX mdrun -deffnm em
 ```
 
 **What's happening?** Energy minimization removes any crazy overlaps or bad contacts in your starting structure. Think of it as gently relaxing the system before doing real dynamics.
+
+> **If you hit a `grompp` error here**: double-check the choices you made in step 2 (box size and solvation). A box that is too small for the cutoff scheme will fail during preprocessing.
 
 ### 4. NPT equilibration 🌡️
 

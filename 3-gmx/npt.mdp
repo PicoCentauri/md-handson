@@ -1,7 +1,7 @@
 ; Run control
 ; ===================================================================
 integrator              = md
-nsteps                  = 10000
+nsteps                  = 100
 dt                      = 0.0005
 
 ; Output control
