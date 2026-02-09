@@ -20,17 +20,6 @@ GROMACS splits the workflow into multiple file types: a structure file (`.gro`),
 
 We use alanine dipeptide, a small biomolecular model system with two peptide bonds. It's basically the "hello world" of biomolecular simulations – simple enough to run quickly, but still shows meaningful conformational changes. Perfect for learning bio-style workflows even if proteins aren't usually your thing!
 
-```
-         ACE              ALA              NME
-     (capping)        (residue)        (capping)
-    
-         O               O                O
-         ‖               ‖                ‖
-    H₃C-C-NH--Cα--C--NH-Cα-C--NH-CH₃
-              |         |
-              CH₃       H
-```
-
 > **Visualization tip** 💡: Open `alanine-dipeptide.pdb` in [chemiscope](https://chemiscope.org/) or [OVITO](https://www.ovito.org/) to see the actual 3D structure!
 
 ## Files
