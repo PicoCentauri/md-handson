@@ -4,7 +4,7 @@
 
 GROMACS stands for "GROningen MAchine for Chemical Simulations". It originated in the biomolecular community and is known for being blazingly fast, having robust workflows, and providing strong analysis tools. In this exercise, you'll use it with ML potentials and compare full ML to ML/MM production.
 
-<!-- Briefly explain ML/MM maybe -->
+<!-- TODO: Briefly explain ML/MM -->
 
 GROMACS splits the workflow into multiple file types: a structure file (`.gro`), a topology file (`.top`, often with included `.itp` files), and a parameter file (`.mdp`). The preprocessor `grompp` combines these into a single binary input (`.tpr`) that `mdrun` uses for the simulation.
 
@@ -42,6 +42,12 @@ We use alanine dipeptide, a small biomolecular model system with two peptide bon
 
 ## Setup
 
+Change the directory to the GROMACS folder:
+
+```bash
+cd 3-gmx
+```
+
 Symlink the model into this folder:
 
 ```bash
@@ -54,7 +60,7 @@ The workflow follows a standard biomolecular pipeline: build and solvate the sys
 
 Set the GROMACS command once:
 
-```
+```bash
 gmx=/home/loche/repos/lab-cosmo/gromacs/build/bin/gmx
 ```
 
@@ -94,7 +100,7 @@ $gmx solvate -cp boxed.gro -cs spc216.gro -o solvated.gro -p topol.top
 
 ### 3. Energy minimization ⚡
 
-```
+```bash
 $gmx grompp -f em.mdp -c solvated.gro -p topol.top -o em.tpr
 $gmx mdrun -deffnm em
 ```
@@ -110,7 +116,7 @@ https://manual.gromacs.org/current/user-guide/mdp-options.html
 
 ### 4. NPT equilibration 🌡️
 
-```
+```bash
 $gmx grompp -f npt.mdp -c em.gro -p topol.top -o npt.tpr
 $gmx mdrun -v -deffnm npt
 ```
@@ -119,7 +125,7 @@ $gmx mdrun -v -deffnm npt
 
 ### 5. Production (full ML) 🚀
 
-```
+```bash
 $gmx grompp -f grompp.mdp -c npt.gro -p topol.top -o md.tpr
 $gmx mdrun -v -deffnm md
 ```
