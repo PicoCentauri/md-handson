@@ -1,7 +1,7 @@
 ; Run control
 ; ===================================================================
 integrator              = steep
-nsteps                  = 500
+nsteps                  = 100
 emtol                   = 1000.0
 emstep                  = 0.01
 
@@ -38,7 +38,8 @@ gen-vel                 = no
 
 ; Metatomic
 ; ===================================================================
-metatomic-active        = true
-metatomic-input-group   = System
-metatomic-model         = model.pt
-metatomic-device        = cuda
+metatomic-active            = true
+metatomic-input-group       = System
+metatomic-check_consistency = false
+metatomic-model             = model.pt
+metatomic-device            = cuda

@@ -1,14 +1,22 @@
 .venv/
+model.pt
 
 # lammps
-log.lammps
-*.restart
-model.pt
 *.lammpstrj
+*.restart
+log.lammps
 
 # gromacs
+*.cpt
+*.edr
 *.gro
 *.itp
+*.log
+*.ndx
 *.top
-mdout.mdp
+*.tpr
+*.trr
+*.xvg
 \#*
+grompp-mlmm.mdp
+mdout.mdp

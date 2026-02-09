@@ -6,7 +6,8 @@ dt                      = 0.0005
 
 ; Output control
 ; ===================================================================
-nstxout                 = 0
+; We write positions every ten steps but omit velicities and forces
+nstxout                 = 10
 nstvout                 = 0
 nstfout                 = 0
 
@@ -34,7 +35,8 @@ gen-seed                = 42
 
 ; Metatomic
 ; ===================================================================
-metatomic-active        = true
-metatomic-input-group   = System
-metatomic-model         = model.pt
-metatomic-device        = cuda
+metatomic-active            = true
+metatomic-input-group       = System
+metatomic-check_consistency = false
+metatomic-model             = model.pt
+metatomic-device            = cuda
