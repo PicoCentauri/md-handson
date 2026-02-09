@@ -10,14 +10,24 @@ pair_style metatomic &
 pair_coeff * * 1 8
 
 neighbor 2.0 bin
+
+# Timestep (ps)
 timestep 0.0005
+
+# Temperature (K)
+variable temp equal 450.0
+
+# Pressure (bar)
+variable press equal 1.0
 
 thermo 50
 
-velocity all create 450 87287 mom yes rot yes
+velocity all create ${temp} 87287 mom yes rot yes
 
-# TODO: add thermostat and barostat (NPT)
-# fix npt all npt temp 450 450 0.1 iso 1.0 1.0 1.0
+# NpT with Berendsen barostat and CSVR Thermostate
+fix 1 all nve
+fix 2 all press/berendsen iso 0.0 0.0 ${press}
+fix 3 all temp/csvr ${temp} ${temp} 100.0 54324
 
 run 1000
 

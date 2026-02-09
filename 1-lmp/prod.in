@@ -10,14 +10,21 @@ pair_style metatomic &
 pair_coeff * * 1 8
 
 neighbor 2.0 bin
+
+# Timestep (ps)
 timestep 0.0005
+
+# Temperature (K)
+variable temp equal 450.0
 
 thermo 100
 
+# NVT with CSVR Thermostate
 fix 1 all nve
+fix 2 all temp/csvr ${temp} ${temp} 100.0 54324
 
 # TODO: write a trajectory (example below)
-# dump traj all custom 100 prod.lammpstrj id type x y z
-# dump_modify traj sort id
+dump traj all custom 100 prod.lammpstrj id type x y z
+dump_modify traj sort id
 
-run 10000
+run 1000

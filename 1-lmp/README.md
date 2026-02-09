@@ -2,17 +2,22 @@
 
 ## About LAMMPS
 
-LAMMPS stands for "Large-scale Atomic/Molecular Massively Parallel Simulator" (quite a mouthful, right? 😅). It's a widely used workhorse for materials science and soft matter because it scales like a beast, offers tons of interaction models, and has a super flexible input language. In this exercise, you'll see how LAMMPS scripts are structured and how GPU acceleration can seriously speed up production runs.
+LAMMPS stands for "Large-scale Atomic/Molecular Massively Parallel Simulator". It's a widely used workhorse for materials science because it scales well, offers tons of interaction models, and has a super flexible input language. In this exercise, you'll see how LAMMPS scripts are structured and how its Kokkos on GPUs acceleration can seriously speed up production runs.
+
+Kokkos is a performance portability library that allows LAMMPS to run efficiently on different hardware backends, including NVIDIA and AMD GPUs. By using Kokkos, you can get significant speedups for MD simulations without changing your input scripts too much – just a few flags to activate the GPU support! 🚀
 
 LAMMPS is typically driven by a single input script. That script can read data files containing positions and, if present, topology information (bonds, angles, dihedrals) plus atom types. This makes it easy to keep the workflow in one place and to swap inputs by changing just a few commands.
+
+For details on the LAMMPS commands refer to:
+https://docs.lammps.org/Commands_input.html
 
 ## Goals 🎯
 
 - Learn LAMMPS input structure (staged EM → NPT → production)
 - Run CPU vs GPU production and compare runtime (spoiler: GPU is fast ⚡)
-- Use a PET ML potential through metatomic
+- Use a PET-MAD ML potential through metatomic
 
-## System 💧
+## System 🌊
 
 We use a small liquid water box with 32 molecules in periodic boundary conditions. The system is intentionally tiny so you can iterate quickly during the hands-on session while still exercising a realistic workflow. Think of it as a speed-run version of real research! 🎮
 
@@ -26,26 +31,50 @@ We use a small liquid water box with 32 molecules in periodic boundary condition
 
 ## Setup
 
+Change the directory to the LAMMPS folder:
+
+```bash
+cd 1-lmp
+```
+
 Symlink the model into this folder:
 
-```
+```bash
 ln -s ../model.pt model.pt
 ```
 
-LAMMPS binary:
+Create an alias for the LAMMPS binary:
+
+```bash
+lmp=/home/loche/repos/lab-cosmo/lammps/build/lmp
+```
+
+You can use the help page to get information on the input commands and the installed modules.
+
+```bash
+$lmp -h
+```
+
+LAMMPS is highly modular—most features are implemented as optional packages that one can choose to compile in or leave out. This means you only pay for what you use, and different builds can be tailored for different hardware or simulation types. For example, the Kokkos package (used for GPU acceleration) is compiled in here, but other builds might include different packages like special output formates, thermostats etc. Installed modules are displayed with `$lmp -h`. For our build you will find a very minimal list:
 
 ```
-/home/loche/repos/lab-cosmo/lammps/build/lmp
-```
+Installed packages:
 
-LAMMPS command reference:
-https://docs.lammps.org/Commands_input.html
+KOKKOS ML-METATOMIC 
+```
 
 ## Exercise 🏃
 
 You'll run a three-stage workflow on CPU and then reproduce the production stage on GPU. The goal is to get comfortable with the input structure and the restart flow between stages.
 
-### 1. Fill the TODOs
+### 1. Fill the TODOs and let the atoms dance 💃
+
+ <!-- TODO:
+ 
+ I think we should restructure this section. one subsection for each step: in EM step, NPT and prod and let the students explain what they see: for EM the potential energy goes down, for npt temperature and pressure equilibrate. Also since we restart from a restart file they should see the continuity of the simulation by the steps, during production the box but the temperature fluctuates.
+ 
+ 
+ We also need a bit for comment lines what the commands are doing in the input files: em.in, npt.in, prod.in -->
 
 Complete the missing parts in `em.in`, `npt.in`, and `prod.in`:
 - **EM**: Select a minimizer and tolerances (how much energy change is good enough?)
@@ -55,22 +84,24 @@ Complete the missing parts in `em.in`, `npt.in`, and `prod.in`:
 
 Execute the stages in order:
 
-```
-/home/loche/repos/lab-cosmo/lammps/build/lmp -in em.in
-/home/loche/repos/lab-cosmo/lammps/build/lmp -in npt.in
-/home/loche/repos/lab-cosmo/lammps/build/lmp -in prod.in
+```bash
+$lmp -in em.in
+$lmp -in npt.in
+$lmp -in prod.in
 ```
 
 **What's happening?** Each stage builds on the previous one. EM relaxes the structure, NPT equilibrates at the right temperature and pressure, and production collects your actual data.
 
-### 3. Write the GPU version
+### 3. Write the GPU version for the production stage
+
+From the production run note the Performance which should be around 1.8 ns/day. Now, let's run the same production stage on GPU using Kokkos. First, write a new input script `prod-kk.in` based on `prod.in` but with the necessary modifications to activate Kokkos and read the restart file from the NPT stage.
 
 Write `prod-kk.in` from scratch using `prod.in` as reference. Use Kokkos (LAMMPS's GPU framework) and read the `npt.restart` file.
 
 ### 4. Run GPU production 🚀
 
-```
-/home/loche/repos/lab-cosmo/lammps/build/lmp -k on g 1 -sf kk -in prod-kk.in
+```bash
+$lmp -k on g 1 -sf kk -in prod-kk.in
 ```
 
 **What's happening?** The `-k on g 1` tells LAMMPS to use 1 GPU, and `-sf kk` activates the Kokkos package. Watch it fly! ⚡

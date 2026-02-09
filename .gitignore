@@ -1,0 +1,5 @@
+.venv/
+log.lammps
+*restart
+model.pt
+*lammpstrj

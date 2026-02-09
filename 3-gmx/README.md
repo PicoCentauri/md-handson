@@ -18,6 +18,8 @@ GROMACS splits the workflow into multiple file types: a structure file (`.gro`),
 
 We use alanine dipeptide, a small biomolecular model system with two peptide bonds. It's basically the "hello world" of biomolecular simulations – simple enough to run quickly, but still shows meaningful conformational changes. Perfect for learning bio-style workflows even if proteins aren't usually your thing!
 
+<!-- Add ascii art of the dipeptide and encourage people to visualize it with chemiscope or ovito -->
+
 ## Files
 
 - `alanine-dipeptide.pdb`: starting structure
@@ -63,6 +65,8 @@ $GMX pdb2gmx -f alanine-dipeptide.pdb -o dipeptide.gro -p topol.top -i posre.itp
 > **Important note** 📝: Creating a topology from a structure file is actually a *very hard task*. `pdb2gmx` seems magical and works incredibly well, but it only works for biomolecular systems (peptides, proteins, nucleic acids). For general materials, you'd have to create topologies by hand (painful 😅) or... just use an MLIP 🤭
 
 ### 2. Define a box and solvate 💧
+
+<!-- add ascii arte of the process: show box creation centering -->
 
 ```
 $GMX editconf -f dipeptide.gro -o boxed.gro -c -d 1.0 -bt cubic
