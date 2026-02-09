@@ -8,7 +8,6 @@ atom_style atomic
 read_data water.data
 
 # Define ML potential via metatomic interface
-# model.pt is the PET-MAD potential trained on PBE-sol data
 pair_style metatomic &
     model.pt &
     uncertainty_threshold off

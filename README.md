@@ -57,6 +57,63 @@ Reference solutions are available in the `solutions/` folder (but try solving it
 
 The PET-MAD potential is trained with PBE-sol reference data, so we're running liquid water simulations at 450 K in this hands-on. Just remember: instantaneous temperature and pressure jump around like crazy in MD – only time-averaged values should match the target conditions!
 
+## Usual MD workflow 🛠️
+
+MD is like setting up an experiment in the lab: you first prepare your system carefully, then choose your conditions, and finally run the simulation to collect data. Every MD simulation follows similar stages:
+
+**1. System Creation:** Build your system (solvate, create topology, add ions). This is the experimental setup phase – you prepare what you'll simulate.
+
+```
+    ┌──────────┐
+    │  System  │
+    │ Creation │
+    └──────────┘
+        │
+```
+
+**2. Energy Minimization (EM):** Remove bad contacts and overlaps. The system relaxes from a potentially strained starting geometry.
+
+```
+    ┌──────────┐
+    │  Energy  │
+    │    Min   │
+    └──────────┘
+        │
+```
+
+**3. Equilibration (NPT):** Bring the system to your target temperature and optionally pressure. The density adjusts, and the system settles into a reasonable state.
+
+```
+    ┌──────────┐
+    │  Equil.  │
+    │  (NPT)   │
+    └──────────┘
+        │
+```
+
+**4. Production (NVT):** Collect your actual simulation data at fixed volume and optionally temperature. This is where the science happens!
+
+```
+    ┌──────────┐
+    │Production│
+    │  (NVT)   │
+    └──────────┘
+        │
+```
+
+**5. Analysis:** Extract observables from your trajectory (RMSF, RDF, energy averages, etc.). This is where you interpret the results and answer your research question.
+
+```
+    ┌──────────┐
+    │ Analysis │
+    │ & Plots  │
+    └──────────┘
+```
+
+Each stage feeds into the next via restart files – you only do this sequence once, then production is the payoff! The total time investment is usually a few minutes up to an hour for stages 1-3, then hours to days for production depending on your system size and available compute. 🚀
+
+Each stage feeds into the next via restart files – you only do this sequence once, then the production run is the payoff! 🎯
+
 ## What is a topology? 🔗
 
 In MD, a topology describes how atoms are connected and which interaction parameters apply. Think of it as the "rulebook" for your system. It typically includes bonded terms (bonds, angles, dihedrals) and nonbonded parameters (charges, atom types). The structure file gives you the coordinates (where things are), while the topology provides the force field definition (how they interact).
@@ -72,7 +129,3 @@ ASE is excellent for prototyping and single-point calculations, but it's not opt
 | LAMMPS 💪 | Materials workhorse, GPU performance | Flexible input scripts and scalable performance |
 | i-PI 🐍 | Advanced sampling, PIMD | Decouples force engines and enables path integrals |
 | GROMACS 🧬 | Biomolecular MD, ML/MM | Mature bio workflows with hybrid ML/MM support |
-
-## Usual MD workflow 🛠️
-
-TODO: Explain that MD is like setting up an experiment: you prepare your system, choose your conditions, and then run the simulation to collect data. The typical stages are:

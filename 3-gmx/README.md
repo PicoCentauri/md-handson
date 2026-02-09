@@ -4,7 +4,7 @@
 
 GROMACS stands for "GROningen MAchine for Chemical Simulations". It originated in the biomolecular community and is known for being blazingly fast, having robust workflows, and providing strong analysis tools. In this exercise, you'll use it with ML potentials and compare full ML to ML/MM production.
 
-<!-- TODO: Briefly explain ML/MM -->
+**ML/MM (Machine Learning / Molecular Mechanics)** is a hybrid approach where you treat only a region of interest (e.g., a peptide) with an expensive ML potential, and the rest (e.g., the water environment) with a fast classical force field. This saves compute time while keeping the important interactions accurate.
 
 GROMACS splits the workflow into multiple file types: a structure file (`.gro`), a topology file (`.top`, often with included `.itp` files), and a parameter file (`.mdp`). The preprocessor `grompp` combines these into a single binary input (`.tpr`) that `mdrun` uses for the simulation.
 
