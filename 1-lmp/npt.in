@@ -44,7 +44,7 @@ fix 1 all nve
 # For production at constant pressure consider using a more rigorous barostat
 # (e.g., Parrinello-Rahman).
 #
-fix 2 all press/berendsen iso 0.0 0.0 ${press}
+#fix 2 all press/berendsen iso ${press} ${press} ${press}
 
 # fix 3: CSVR thermostat (canonical sampling through velocity rescaling) - Michele approved
 # ${temp} ${temp} 100.0 54324 means:

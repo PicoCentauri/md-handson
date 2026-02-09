@@ -60,7 +60,7 @@ LAMMPS is highly modular—most features are implemented as optional packages th
 ```
 Installed packages:
 
-KOKKOS ML-METATOMIC 
+EXTRA-FIX KOKKOS ML-METATOMIC 
 ```
 
 ## Exercise 🏃
@@ -126,7 +126,7 @@ Now that you have the CPU performance baseline, let's run the same production st
 **First**, check the performance from your CPU run in the terminal output or `log.lammps`. You should see something like:
 
 ```
-Performance: 1.8 ns/day, ...
+Performance: 2.3 ns/day, ...
 ```
 
 **Second**, write a new input script `prod-kk.in` based on `prod.in` but with Kokkos GPU acceleration:
