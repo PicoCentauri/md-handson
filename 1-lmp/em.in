@@ -1,21 +1,39 @@
+# Set units to metal (Angstroms, eV, ps, K)
 units metal
+
+# Atomic system (no bonds, angles, etc.)
 atom_style atomic
 
+# Read initial positions and box from data file
 read_data water.data
 
+# Define ML potential via metatomic interface
+# model.pt is the PET-MAD potential trained on PBE-sol data
 pair_style metatomic &
     model.pt &
     uncertainty_threshold off
 
+# Apply the potential to all atom types (1 = H, 8 = O)
 pair_coeff * * 1 8
 
+# Neighbor list settings: 2.0 Å skin distance, bin algorithm
 neighbor 2.0 bin
+
+# Timestep in ps (0.5 fs)
 timestep 0.0005
 
+# Print thermodynamic output every 50 steps
 thermo 50
 
 # TODO: choose a minimizer and set tolerances/iterations
+# Minimizer: conjugate gradient (cg) is robust for ML potentials
+# minimize etol ftol maxiter maxeval
+#   etol = energy tolerance (unitless)
+#   ftol = force tolerance (eV/Å)
+#   maxiter = max iterations
+#   maxeval = max force evaluations
 min_style cg
 minimize 1e-6 1e-8 1000 10000
 
+# Write restart file for next stage
 write_restart em.restart

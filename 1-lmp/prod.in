@@ -1,30 +1,42 @@
+# Set units to metal
 units metal
 atom_style atomic
 
+# Continue from equilibrated NPT state
 read_restart npt.restart
 
+# Set up the same ML potential
 pair_style metatomic &
     model.pt &
     uncertainty_threshold off
 
 pair_coeff * * 1 8
 
+# Neighbor list settings
 neighbor 2.0 bin
 
 # Timestep (ps)
 timestep 0.0005
 
-# Temperature (K)
+# Target temperature (K)
 variable temp equal 450.0
 
+# Print thermodynamic output every 100 steps (less frequent than equilibration)
 thermo 100
 
-# NVT with CSVR Thermostate
+# NVT ensemble with CSVR thermostat (no barostat = constant volume)
 fix 1 all nve
 fix 2 all temp/csvr ${temp} ${temp} 100.0 54324
 
-# TODO: write a trajectory (example below)
+# Write trajectory for analysis
+# dump <name> <group> <style> <frequency> <filename> <columns...>
+# custom = user-defined columns
+# 100 = write every 100 steps
+# id type x y z = atom ID, type, and Cartesian coordinates
 dump traj all custom 100 prod.lammpstrj id type x y z
+
+# Sort atoms by ID in output (makes analysis easier)
 dump_modify traj sort id
 
+# Run 1000 timesteps (0.5 ps of production data)
 run 1000

@@ -69,56 +69,82 @@ You'll run a three-stage workflow on CPU and then reproduce the production stage
 
 ### 1. Fill the TODOs and let the atoms dance 💃
 
- <!-- TODO:
- 
- I think we should restructure this section. one subsection for each step: in EM step, NPT and prod and let the students explain what they see: for EM the potential energy goes down, for npt temperature and pressure equilibrate. Also since we restart from a restart file they should see the continuity of the simulation by the steps, during production the box but the temperature fluctuates.
- 
- 
- We also need a bit for comment lines what the commands are doing in the input files: em.in, npt.in, prod.in -->
+Complete the missing parts in `em.in`, `npt.in`, and `prod.in` and run each stage. After each run, observe the output carefully!
 
-Complete the missing parts in `em.in`, `npt.in`, and `prod.in`:
-- **EM**: Select a minimizer and tolerances (how much energy change is good enough?)
-- **NPT**: Choose thermostat and barostat settings (target 450 K 🌡️)
-- **Production**: Read the NPT restart and write a trajectory (this is where the data comes from!)
-### 2. Run the CPU pipeline
+#### 1a. Energy Minimization (EM)
 
-Execute the stages in order:
+Open `em.in` and complete the TODO: select a minimizer and set tolerances.
+
+Run the minimization:
 
 ```bash
 $lmp -in em.in
+```
+
+**What to observe:** Watch the potential energy decrease as the structure relaxes. The minimizer is finding a local energy minimum by adjusting atomic positions. The energy should drop significantly in the first iterations and then level off as the system reaches a stable configuration.
+
+**logs 📝** By default, LAMMPS writes a `log.lammps` file in the current directory.
+
+#### 1b. NPT Equilibration
+
+Open `npt.in` and complete the TODO: set up thermostat and barostat settings (target 450 K 🌡️ and 1.0 bar).
+
+Run the equilibration:
+
+```bash
 $lmp -in npt.in
+```
+
+**What to observe:** Temperature and pressure both equilibrate to their targets. Note that:
+- Initial values may be far from 450 K since we start from a minimized (cold) structure
+- Instantaneous values fluctuate strongly – this is normal in MD!
+- Look at the time-averaged values (look at trends across many steps)
+- The box volume may adjust as the system finds the right density for 450 K and 1 bar
+- Since we `read_restart` from the EM stage, the simulation continues seamlessly
+
+#### 1c. Production Run
+
+Open `prod.in` and complete the TODO: read the restart from NPT and set up trajectory output.
+
+Run production:
+
+```bash
 $lmp -in prod.in
 ```
 
-**What's happening?** Each stage builds on the previous one. EM relaxes the structure, NPT equilibrates at the right temperature and pressure, and production collects your actual data.
+**What to observe:**
+- The simulation continues from the NPT equilibrated state (restart continuity!)
+- Temperature fluctuates around 450 K (not exactly at 450 K at every step – this is statistical mechanics!)
+- The box dimensions should remain stable since we're running NVT (constant volume) after equilibration
+- A trajectory file `prod.lammpstrj` is written for later analysis
+- Note the **Performance** at the end (~1.8 ns/day on CPU) – write this down!
 
-### 3. Write the GPU version for the production stage
+### 2. GPU-accelerated production run with Kokkos 🚀
 
-From the production run note the Performance which should be around 1.8 ns/day. Now, let's run the same production stage on GPU using Kokkos. First, write a new input script `prod-kk.in` based on `prod.in` but with the necessary modifications to activate Kokkos and read the restart file from the NPT stage.
+Now that you have the CPU performance baseline, let's run the same production stage on GPU and see the speedup!
 
-Write `prod-kk.in` from scratch using `prod.in` as reference. Use Kokkos (LAMMPS's GPU framework) and read the `npt.restart` file.
+**First**, check the performance from your CPU run in the terminal output or `log.lammps`. You should see something like:
 
-### 4. Run GPU production 🚀
+```
+Performance: 1.8 ns/day, ...
+```
+
+**Second**, write a new input script `prod-kk.in` based on `prod.in` but with Kokkos GPU acceleration:
+- Change `atom_style atomic` to `atom_style atomic/kk`
+- Add `package kokkos newton on neigh half` at the top
+- Change `pair_style metatomic` to `pair_style metatomic/kk` and add `device cuda`
+- Add `run_style verlet/kk` before the `run` command
+- Use the `npt.restart` file to continue from the equilibrated state
+
+**Third**, run the GPU version:
 
 ```bash
 $lmp -k on g 1 -sf kk -in prod-kk.in
 ```
 
-**What's happening?** The `-k on g 1` tells LAMMPS to use 1 GPU, and `-sf kk` activates the Kokkos package. Watch it fly! ⚡
+**What's happening?** The `-k on g 1` tells LAMMPS to use 1 GPU, and `-sf kk` activates the Kokkos package. 
 
-## Expected checks ✅
-
-- `em.restart` and `npt.restart` are written
-- Temperature and pressure stabilize in the time average during NPT (remember: instantaneous values are noisy!)
-- Production generates a trajectory file (e.g., `prod.lammpstrj`)
-- GPU run is faster than CPU for production (probably by a lot! 🚀)
-
-## Outputs and logs 📝
-
-Watch the output during the run and review the log file afterwards. By default, LAMMPS writes a `log.lammps` file in the current directory. Remember: instantaneous temperature and pressure jump around and don't mean much on their own – always check time-averaged values!
-
-## Notes 📌
-
-- If you're new to LAMMPS: focus on the script layout and the flow of data between stages.
-- If you're experienced: try to estimate a rough speedup factor from the CPU and GPU runs. How many times faster is it?
-- Most importantly: have fun and experiment! LAMMPS is super flexible once you get the hang of it. 😊
+**What to observe:**
+- Compare the **Performance** with the CPU run – you should see a significant speedup! ⚡
+- The trajectory should be physically equivalent to the CPU run (same physics, just faster computation)
+- How many times faster is the GPU? Calculate the speedup factor!
