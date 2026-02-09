@@ -1,18 +1,15 @@
-# Set units to metal (same as previous stage)
 units metal
 atom_style atomic
 
 # Continue from minimized structure
 read_restart em.restart
 
-# Set up the same ML potential
 pair_style metatomic &
     model.pt &
     uncertainty_threshold off
 
 pair_coeff * * 1 8
 
-# Neighbor list settings (same as before)
 neighbor 2.0 bin
 
 # Timestep (ps)
@@ -24,7 +21,6 @@ variable temp equal 450.0
 # Target pressure (bar)
 variable press equal 1.0
 
-# Print thermodynamic output every 50 steps
 thermo 50
 
 # Initialize velocities from Maxwell-Boltzmann distribution at target temp
@@ -40,9 +36,17 @@ fix 1 all nve
 # iso 0.0 0.0 ${press} means:
 #   - Current pressure → target pressure (${press})
 #   - Relaxation timescale is implicit in Berendsen algorithm
+#
+# !!!!!!! NOT MICHELE APPROVED !!!!!!
+#
+# The Berendsen barostat does not generate a true NPT ensemble (it does not sample the
+# correct distribution), but it is simple and often used for equilibration.
+# For production at constant pressure consider using a more rigorous barostat
+# (e.g., Parrinello-Rahman).
+#
 fix 2 all press/berendsen iso 0.0 0.0 ${press}
 
-# fix 3: CSVR thermostat (canonical sampling through velocity rescaling)
+# fix 3: CSVR thermostat (canonical sampling through velocity rescaling) - Michele approved
 # ${temp} ${temp} 100.0 54324 means:
 #   - Start temp → target temp
 #   - 100.0 = damping time in timestep units

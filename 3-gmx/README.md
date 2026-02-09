@@ -19,8 +19,6 @@ GROMACS splits the workflow into multiple file types: a structure file (`.gro`),
 We use alanine dipeptide, a small biomolecular model system with two peptide bonds. It's basically the "hello world" of biomolecular simulations – simple enough to run quickly, but still shows meaningful conformational changes. Perfect for learning bio-style workflows even if proteins aren't usually your thing!
 
 ```
-        Alanine Dipeptide Structure (ACE-ALA-NME)
-        
          ACE              ALA              NME
      (capping)        (residue)        (capping)
     
@@ -29,10 +27,6 @@ We use alanine dipeptide, a small biomolecular model system with two peptide bon
     H₃C-C-NH--Cα--C--NH-Cα-C--NH-CH₃
               |         |
               CH₃       H
-         
-         ^^^^^^^^^     ^^^^^^^^^  
-       peptide bond 1  peptide bond 2
-
 ```
 
 > **Visualization tip** 💡: Open `alanine-dipeptide.pdb` in [chemiscope](https://chemiscope.org/) or [OVITO](https://www.ovito.org/) to see the actual 3D structure!
@@ -74,7 +68,7 @@ GMX=/home/loche/repos/lab-cosmo/gmx/build/gmx
 ### 1. Build topology (AMBER99SB-ILDN + SPC/E)
 
 ```
-$GMX pdb2gmx -f alanine-dipeptide.pdb -o dipeptide.gro -p topol.top -i posre.itp -ff amber99sb-ildn -water spce
+$gmx pdb2gmx -f alanine-dipeptide.pdb -o dipeptide.gro -p topol.top -i posre.itp -ff amber99sb-ildn -water spce
 ```
 
 **What's happening here?** `pdb2gmx` reads your structure file (PDB format) and generates a topology that describes all the bonds, angles, and interactions. It's basically translating your structure into GROMACS language. The `-ff` flag picks the force field (AMBER99SB-ILDN, good for proteins) and `-water spce` chooses the water model (SPC/E).
@@ -86,22 +80,20 @@ $GMX pdb2gmx -f alanine-dipeptide.pdb -o dipeptide.gro -p topol.top -i posre.itp
 We now need to put our molecule in a box and fill it with water. This is crucial for MD because we want to simulate a realistic environment. The commands are:
 
 ```
-$GMX editconf -f dipeptide.gro -o boxed.gro -c -d 0.4 -bt cubic
-$GMX solvate -cp boxed.gro -cs spc216.gro -o solvated.gro -p topol.top
+$gmx editconf -f dipeptide.gro -o boxed.gro -c -d 0.4 -bt cubic
+$gmx solvate -cp boxed.gro -cs spc216.gro -o solvated.gro -p topol.top
 ```
 
 **What's happening here?** 
 
 ```
-       🧬                            ┌─────────────┐              ┌─────────────┐
-      /  \                           │             │              │ ○  ○    ○   │
-     /    \                          │             │              │    ○  ○     │
-    🧬─────🧬        ──────>          │   ← d=0.4nm→│   ──────>    │ ○   🧬   ○  │
-         \                           │      🧬      │              │  ○ /  \ ○   │
-          🧬                          │     /  \    │              │ ○ 🧬───🧬 ○ │
-                                     │    🧬───🧬   │              │   ○ ○  ○ ○ │
-                                     │             │              │ ○   ○   ○  │
-                                     └─────────────┘              └─────────────┘
+                      ┌─────────────┐            ┌─────────────┐
+                      │             │            │ ○  ○    ○   │
+                      │ <- 0.4nm -> │            │    ○  ○     │
+        x   ------>   │      x      │   ----->   │ ○   x   ○   │
+                      │             │            │    ○   ○    │
+                      │             │            │ ○   ○   ○   │
+                      └─────────────┘            └─────────────┘
 ```
 
 - `editconf`: Creates a simulation box around your molecule. The `-c` flag centers the molecule, `-d 1.0` puts the box edges 1.0 nm away from the molecule (so it doesn't see its own periodic image), and `-bt cubic` makes it a cube.
@@ -110,8 +102,8 @@ $GMX solvate -cp boxed.gro -cs spc216.gro -o solvated.gro -p topol.top
 ### 3. Energy minimization ⚡
 
 ```
-$GMX grompp -f em.mdp -c solvated.gro -p topol.top -o em.tpr
-$GMX mdrun -deffnm em
+$gmx grompp -f em.mdp -c solvated.gro -p topol.top -o em.tpr
+$gmx mdrun -deffnm em
 ```
 
 **What's happening?** Energy minimization removes any crazy overlaps or bad contacts in your starting structure. Think of it as gently relaxing the system before doing real dynamics.
@@ -121,8 +113,8 @@ $GMX mdrun -deffnm em
 ### 4. NPT equilibration 🌡️
 
 ```
-$GMX grompp -f npt.mdp -c em.gro -p topol.top -o npt.tpr
-$GMX mdrun -deffnm npt
+$gmx grompp -f npt.mdp -c em.gro -p topol.top -o npt.tpr
+$gmx mdrun -deffnm npt
 ```
 
 **What's happening?** Now we run a short simulation at constant pressure and temperature to let the system equilibrate. The density will adjust to the right value, and everything will settle into a reasonable state before production.
@@ -130,8 +122,8 @@ $GMX mdrun -deffnm npt
 ### 5. Production (full ML) 🚀
 
 ```
-$GMX grompp -f grompp.mdp -c npt.gro -p topol.top -o md.tpr
-$GMX mdrun -deffnm md
+$gmx grompp -f grompp.mdp -c npt.gro -p topol.top -o md.tpr
+$gmx mdrun -deffnm md
 ```
 
 **What's happening?** This is the real deal! The production run where we collect data using the ML potential for *everything* (dipeptide + water).
@@ -142,14 +134,14 @@ $GMX mdrun -deffnm md
 - Create an index group named `Dipeptide` (ACE + ALA + NME):
 
 ```
-$GMX make_ndx -f npt.gro -o index.ndx
+$gmx make_ndx -f npt.gro -o index.ndx
 ```
 
 Then run:
 
 ```
-$GMX grompp -f grompp-mlmm.mdp -c npt.gro -p topol.top -n index.ndx -o md-mlmm.tpr
-$GMX mdrun -deffnm md-mlmm
+$gmx grompp -f grompp-mlmm.mdp -c npt.gro -p topol.top -n index.ndx -o md-mlmm.tpr
+$gmx mdrun -deffnm md-mlmm
 ```
 
 ## Analysis 📊
@@ -159,8 +151,8 @@ Compare RMSF between full ML and ML/MM:
 RMSF (root-mean-square fluctuation) measures how much each atom or residue jiggles around its average position over the trajectory. Higher RMSF = more floppy, lower = more rigid. It's super useful for comparing how different setups affect dynamics!
 
 ```
-$GMX rmsf -f md.xtc -s md.tpr -o rmsf-ml.xvg
-$GMX rmsf -f md-mlmm.xtc -s md-mlmm.tpr -o rmsf-mlmm.xvg
+$gmx rmsf -f md.xtc -s md.tpr -o rmsf-ml.xvg
+$gmx rmsf -f md-mlmm.xtc -s md-mlmm.tpr -o rmsf-mlmm.xvg
 ```
 
 ## Expected checks ✅
