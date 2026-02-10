@@ -18,5 +18,4 @@ log.lammps
 *.trr
 *.xvg
 \#*
-grompp-mlmm.mdp
 mdout.mdp
