@@ -126,11 +126,11 @@ $gmx solvate -cp boxed.gro -o solvated.gro -p topol.top
 
 ```bash
 $gmx grompp -f em.mdp -c solvated.gro -p topol.top -o em.tpr
-$gmx mdrun -deffnm em
+$gmx mdrun -v -deffnm em
 ```
 
-The `-deffnm` option will set the default filename for all output files to `em`, so
-you'll get `em.gro`, `em.log`, etc.
+The `-v` option enables verbose output, and the `-deffnm` option will set the default
+filename for all output files to `em`, so you'll get `em.gro`, `em.log`, etc.
 
 Full MDP option reference:
 https://manual.gromacs.org/current/user-guide/mdp-options.html
@@ -174,18 +174,10 @@ $gmx make_ndx -f npt.gro -o index.ndx
 ```
 
 Just type `q` and hit enter to create no special group. Inspect the `index.ndx` file to
-find the name of the peptide group. Use that name in the MDP file and then run:
-
-```bash
-$gmx grompp -f grompp-mlmm.mdp -c npt.gro -p topol.top -o md-mlmm.tpr
-```
+find the name of the peptide group. Use that name in the MDP file to run the preprocessor.
 
 How many atoms are in the ML region? How many are in the MM region? Check the terminal
-output from `grompp` to confirm that the ML/MM partitioning is correct. Then run:
-
-```bash
-$gmx mdrun -deffnm md-mlmm
-```
+output from `grompp` to confirm that the ML/MM partitioning is correct. Then run the MD.
 
 Did you notice that the ML/MM production is faster than the full ML?
 
