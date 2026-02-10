@@ -24,13 +24,19 @@ variable temp equal 450.0
 # Print thermodynamic output every 100 steps (less frequent than equilibration)
 thermo 100
 
-# OPTIONAL: Adjust the thermo output to include properties of interest (e.g. density, potential energy, etc.)
-
 # NVT ensemble with CSVR thermostat (no barostat = constant volume)
 fix 1 all nve
 fix 2 all temp/csvr ${temp} ${temp} 100.0 54324
 
-# TODO write trajectory for analysis
+# Write trajectory for analysis
+# dump <name> <group> <style> <frequency> <filename> <columns...>
+# custom = user-defined columns
+# 100 = write every 100 steps
+# id type x y z = atom ID, type, and Cartesian coordinates
+dump traj all custom 100 prod.lammpstrj id type x y z
+
+# Sort atoms by ID in output (makes analysis easier)
+dump_modify traj sort id
 
 # Run 1000 timesteps (0.5 ps of production data)
 run 1000

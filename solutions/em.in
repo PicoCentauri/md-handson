@@ -12,7 +12,7 @@ pair_style metatomic &
     model.pt &
     uncertainty_threshold off
 
-# Apply the potential and map atom types from LAMMPS types to elements
+# Apply the potential to all atom types (1 = H, 8 = O)
 pair_coeff * * 1 8
 
 # Neighbor list settings: 2.0 Å skin distance, bin algorithm
@@ -25,6 +25,14 @@ timestep 0.0005
 thermo 50
 
 # TODO: choose a minimizer and set tolerances/iterations
+# Minimizer: conjugate gradient (cg) is robust for ML potentials
+# minimize etol ftol maxiter maxeval
+#   etol = energy tolerance (unitless)
+#   ftol = force tolerance (eV/Å)
+#   maxiter = max iterations
+#   maxeval = max force evaluations
+min_style cg
+minimize 1e-6 1e-8 1000 10000
 
 # Write restart file for next stage
 write_restart em.restart

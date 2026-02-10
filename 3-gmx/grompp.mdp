@@ -6,8 +6,7 @@ dt                      = 0.0005  ; timestep in ps
 
 ; Output control
 ; ===================================================================
-; Write trajectory every 10 steps (nstxout = 10 means write positions every 10 fs)
-; This is a balance: frequent enough for good statistics, sparse enough to save disk space
+; Write positions every 10 steps (10 fs)
 nstxout                 = 10
 nstvout                 = 0
 nstfout                 = 0
@@ -32,8 +31,8 @@ vdw-type                = Cut-off
 ; ===================================================================
 tcoupl                  = V-rescale
 tc-grps                 = System
-tau_t                   = 0.1
-ref_t                   = 450
+tau-t                   = 0.1
+ref-t                   = 450
 
 ; Pressure coupling
 ; ===================================================================
