@@ -164,7 +164,7 @@ $gmx energy -f npt.edr
 Prompt the values you want to save and the mean is shown at the end of the output and
 the time series is saved in `energy.xvg`.
 
-### 5. Production (full ML) 🚀
+### 5. Production (full ML) 🧬
 
 ```bash
 $gmx grompp -f grompp.mdp -c npt.gro -o md.tpr
