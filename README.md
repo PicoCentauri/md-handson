@@ -35,7 +35,7 @@ failures. Time to get your hands dirty! 🚀
 
 Load modules including Python and OpenMPI with CUDA support:
 
-```
+```bash
 module purge
 module load gcc
 module load python

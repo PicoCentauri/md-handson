@@ -125,7 +125,7 @@ $gmx solvate -cp boxed.gro -o solvated.gro -p topol.top
 ### 3. Energy minimization ⚡
 
 ```bash
-$gmx grompp -f em.mdp -c solvated.gro -p topol.top -o em.tpr
+$gmx grompp -f em.mdp -c solvated.gro -o em.tpr
 $gmx mdrun -v -deffnm em
 ```
 
@@ -154,10 +154,20 @@ $gmx mdrun -v -deffnm npt
 to let the system equilibrate. The density will adjust to the right value, and
 everything will settle into a reasonable state before production.
 
+You can inspect some observables like energy and pressure to confirm that the system is
+equilibrating properly using 
+
+```bash
+$gmx energy -f npt.edr
+```
+
+Prompt the values you want to save and the mean is shown at the end of the output and
+the time series is saved in `energy.xvg`.
+
 ### 5. Production (full ML) 🚀
 
 ```bash
-$gmx grompp -f grompp.mdp -c npt.gro -p topol.top -o md.tpr
+$gmx grompp -f grompp.mdp -c npt.gro -o md.tpr
 $gmx mdrun -v -deffnm md
 ```
 
@@ -166,20 +176,48 @@ using the ML potential for *everything* (dipeptide + water).
 
 ### 6. ML/MM production ⚡💧
 
-- Copy the production MDP and change `metatomic-input-group` to the peptide. To figure
-  out the name of the group you can create an index file with:
+Now we'll switch to a hybrid ML/MM approach where only the peptide is treated with ML and the water uses classical mechanics. This requires a few careful steps:
+
+**Step 6a: Find the peptide group name**
+
+Create an index file to see available groups:
 
 ```bash
 $gmx make_ndx -f npt.gro -o index.ndx
 ```
 
-Just type `q` and hit enter to create no special group. Inspect the `index.ndx` file to
-find the name of the peptide group. Use that name in the MDP file to run the preprocessor.
+Just type `q` and hit enter. Inspect the `index.ndx` file to find the name of the peptide group (should be something like `Protein` or `Protein-H`).
 
-How many atoms are in the ML region? How many are in the MM region? Check the terminal
-output from `grompp` to confirm that the ML/MM partitioning is correct. Then run the MD.
+**Step 6b: Prepare ML/MM input files**
 
-Did you notice that the ML/MM production is faster than the full ML?
+Copy and modify both the energy minimization and production MDP files:
+
+```bash
+cp em.mdp em-mlmm.mdp
+cp grompp.mdp grompp-mlmm.mdp
+```
+
+In **both** files, make these changes:
+1. Change `metatomic-input-group = System` to `metatomic-input-group = <YourPeptideGroup>` (use the group name from step 6a)
+2. Change `coulombtype = Cut-off` to `coulombtype = PME` for correct electrostatics in the MM region
+
+**Why PME?** The MM region (water) needs proper long-range electrostatics. PME (Particle Mesh Ewald) handles this efficiently, while the ML region is handled by the potential internally.
+
+**Step 6c: Energy minimization with ML/MM**
+
+The ML/MM partitioning creates new interfaces. Run an energy minimization as you learned above.
+
+> 🎲 **Feeling brave?** Try skipping this step and go straight to production. See what happens! (Spoiler: Brace yourself for segfaults)
+
+**Step 6d: Production with ML/MM**
+
+Now run production with the relaxed ML/MM structure.
+
+**What to check:** Look at the `grompp` output to confirm:
+- How many atoms are in the ML region? (should be ~22 for the peptide)
+- How many are in the MM region? (should be ~1000 water atoms)
+
+**Did you notice** that the ML/MM production is faster than the full ML? That's the power of hybrid approaches! ⚡
 
 ## Analysis 📊
 

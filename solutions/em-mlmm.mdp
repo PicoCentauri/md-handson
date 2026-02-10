@@ -1,0 +1,47 @@
+; Run control
+; ===================================================================
+; steep = steepest descent minimizer (robust, not the fastest but reliable for MLIPs)
+integrator              = steep
+nsteps                  = 100
+emtol                   = 1000.0  ; energy tolerance (kJ/mol) - stop when energy change < this
+emstep                  = 0.01   ; initial step size in Angstroms
+
+; Output control
+; ===================================================================
+; We don't write any output during minimization (no trajectory needed)
+nstxout                 = 0
+nstvout                 = 0
+nstfout                 = 0
+
+; Neighbor searching
+; ===================================================================
+; Verlet: generate pair lists using velocity Verlet neighbor search
+; rlist = pair list cutoff, must be >= largest cutoff (0.9 nm for ML potentials)
+cutoff-scheme           = verlet
+rlist                   = 0.9     ; pair list cutoff in nm (must be >= model cutoff!)
+rcoulomb                = 0.9     ; electrostatic cutoff (not used, but GROMACS requires it)
+rvdw                    = 0.9     ; van der Waals cutoff (not used, but GROMACS requires it)
+pbc                     = xyz     ; periodic boundary conditions in all directions
+
+; Electrostatics
+; ===================================================================
+; ML/MM requires PME for correct electrostatics in the MM region
+; The ML region is handled by the potential, but water needs long-range electrostatics
+coulombtype             = PME
+
+; Van der Waals
+; ===================================================================
+; Same: ML handles it, GROMACS needs the specification
+vdw-type                = Cut-off
+
+; Velocity generation
+; ===================================================================
+; no velocities for energy minimization (minimizer doesn't need them)
+gen-vel                 = no
+
+; Metatomic (ML potential)
+; ===================================================================
+metatomic-active        = true   ; use ML potential
+metatomic-input-group   = Protein ; ML only for the peptide (ML/MM hybrid)
+metatomic-model         = model.pt
+metatomic-device        = cuda    ; use GPU
