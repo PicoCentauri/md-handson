@@ -48,8 +48,7 @@ gen-seed                = 42
 
 ; Metatomic (ML potential)
 ; ===================================================================
-metatomic-active            = true
-metatomic-input-group       = Protein
-metatomic-check_consistency = false
-metatomic-model             = model.pt
-metatomic-device            = cuda
+metatomic-active        = true
+metatomic-input-group   = Protein
+metatomic-model         = model.pt
+metatomic-device        = cuda

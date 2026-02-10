@@ -54,8 +54,7 @@ gen-seed                = 42
 
 ; Metatomic (ML potential)
 ; ===================================================================
-metatomic-active            = true
-metatomic-check_consistency = false   ; skip consistency checks during equilibration
-metatomic-input-group       = System  ; apply to all atoms
-metatomic-model             = model.pt
-metatomic-device            = cuda
+metatomic-active        = true
+metatomic-input-group   = System  ; apply to all atoms
+metatomic-model         = model.pt
+metatomic-device        = cuda

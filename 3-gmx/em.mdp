@@ -40,8 +40,7 @@ gen-vel                 = no
 
 ; Metatomic (ML potential)
 ; ===================================================================
-metatomic-active            = true   ; use ML potential
-metatomic-input-group       = System ; apply to all atoms
-metatomic-check_consistency = false   ; skip slow consistency checks for speed
-metatomic-model             = model.pt
-metatomic-device            = cuda    ; use GPU
+metatomic-active        = true   ; use ML potential
+metatomic-input-group   = System ; apply to all atoms
+metatomic-model         = model.pt
+metatomic-device        = cuda    ; use GPU
