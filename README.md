@@ -153,9 +153,9 @@ high-level wrappers.
 
 | Engine | Focus | Why it matters |
 | --- | --- | --- |
-| LAMMPS 💪 | Materials workhorse, GPU performance | Flexible input scripts and scalable performance |
-| i-PI 🐍 | Advanced sampling, PIMD | Decouples force engines and enables path integrals |
-| GROMACS 🧬 | Biomolecular MD, ML/MM | Mature bio workflows with hybrid ML/MM support |
+| LAMMPS 💪 | Materials workhorse | Flexible input scripts and scalable performance |
+| i-PI 🐍 | Advanced sampling, PIMD | Decouples force engines and enables path integrals |
+| GROMACS 🧬 | Biomolecular MD, ML/MM | Mature bio workflows with hybrid ML/MM support |
 
 ## Let's goooooo 🚀
 
