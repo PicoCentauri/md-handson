@@ -1,34 +1,62 @@
-# i-PI engine 🐍
+# i-PI Hands-on Demo: Replica Exchange MD with Machine Learning Potentials
 
-## About i-PI
+This repository contains a demo for running Replica Exchange Molecular Dynamics (REMD) using **i-PI** and a machine learning potential. The demo uses a **PET** (Point Edge Transformer) model for a "nano soup" system.
 
-i-PI is a Python-based driver for advanced MD techniques. The name reflects its focus on path integrals (PIMD) and its lightweight, hackable architecture (plus, it's written in Python, hence the snake 🐍). It separates the integrator from the force engine, which makes it super easy to connect to many force providers and to experiment with advanced sampling methods. Think of it as the Swiss Army knife of MD! 🔪
+## Prerequisites
 
-## Goals 🎯
+To run this demo, you need to have `i-pi` and the `metatomic` driver installed. You can install them via pip:
 
-- Learn the i-PI workflow with an external force engine
-- Compare classical MD vs PIMD (nuclear quantum effects, anyone? 🧠)
-- Analyze RDFs with MDAnalysis
+```bash
+pip install i-pi metatomic[torch]
+```
 
-## System 💧
+## Demo Components
 
-We use a small liquid water box with 32 molecules in periodic boundary conditions. The system is intentionally tiny to make classical MD and PIMD runs fast during the session. The PET-MAD potential is trained with PBE-sol reference data, so runs target 450 K. Nuclear quantum effects in water? Yeah, that's a thing! 🎉
+- **`nano_soup-*.xyz`**: 16 initial configurations for the REMD simulation.
+- **`pet-mad-s-v1.5.0-rc1.pt`**: A pre-trained PET model used to calculate forces and energies.
+- **`input-remd_direct.xml`**: i-PI input file using the "direct" interface (forcefield evaluated within the i-PI process).
+- **`input-remd_socket.xml`**: i-PI input file using the "socket" interface (requires external drivers).
+- **`run_driver.sh`**: A script to launch the `i-pi-driver-py` with the `metatomic` model.
+- **`run_scripting.py`**: A Python script demonstrating the `InteractiveSimulation` API.
 
-## Files
+## How to Run
 
-- `water.xyz`: pre-built liquid water system
-- Input XML files: TODO (to be provided by the instructor)
+### 1. Socket Mode (Client-Server)
+This is the original i-PI concept, running in client-server modes and allowing
+for parallelization across multiple machines or processes.
 
-## Exercise outline 🏃
+1. **Start the i-PI server:**
+   ```bash
+   i-pi input-remd_socket.xml &
+   ```
+2. **Start the driver(s):**
+   ```bash
+   bash run_driver.sh
+   ```
+   *Note: You can run the driver multiple times in different terminals to speed up the simulation if you have enough CPU/GPU resources.*
 
-This section will be completed with the input XML files and exact commands. The key idea is to compare a classical MD run to a PIMD run on the same water system and then analyze how the RDF (radial distribution function) changes. Spoiler: quantum effects make water weirder! 😅
+### 2. Direct Mode
+This is the simplest way to run, as it doesn't require managing separate driver processes.
 
-1. Classical MD run (TODO: input and commands)
-2. PIMD run (TODO: input and commands)
-3. RDF comparison with MDAnalysis (TODO: scripts and expected trends)
+```bash
+i-pi input-remd_direct.xml
+```
 
-## Notes 📌
+### 3. Interactive Scripting
+This demonstrates how to use i-PI as a library within a Python script. The script runs a few steps, shuffles the structures manually, and then continues.
 
-- If you already know i-PI: focus on the force engine connection and the RDF comparison. Can you spot the quantum effects?
-- If you're new: focus on the structure of the XML input and the role of the driver. XML might look scary at first, but it's actually pretty logical!
-- Remember: i-PI is all about flexibility and advanced methods, so don't be afraid to experiment later! 🚀
+```bash
+python run_scripting.py
+```
+
+## Monitoring the Simulation
+
+The simulation will produce output files with the prefix `soup-nano_direct` or `soup-nano_socket`:
+- `*.out`: Thermodynamic properties (step, time, potential energy, temperature, etc.)
+- `*.pos_*.xyz`: Atomic trajectories.
+- `*.checkpoint`: Restart files.
+
+You can check the progress by looking at the `.out` files:
+```bash
+tail -f soup-nano_direct.out
+```
