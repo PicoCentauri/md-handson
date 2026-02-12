@@ -65,7 +65,7 @@ ln -s ../model.pt model.pt
 Create an alias for the LAMMPS binary:
 
 ```bash
-lmp=/home/loche/repos/lab-cosmo/lammps/build/lmp
+alias lmp=/home/loche/repos/lab-cosmo/lammps/build/lmp
 ```
 
 You can use the help page to get information on the input commands and the installed
