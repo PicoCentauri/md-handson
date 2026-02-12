@@ -240,3 +240,13 @@ $gmx rmsf -f md-mlmm.trr -s md-mlmm.tpr -o rmsf-mlmm.xvg
 You can compare the outputs by plotting them with `matplotlib` or any plotting tool you
 like. Are the RMSF profiles similar? Where do they differ? This can give you insight
 into how the ML/MM partitioning affects the dynamics of the peptide.
+
+## More Tutorials
+
+For more tutorials you can take a look at 
+
+http://www.mdtutorials.com/gmx
+
+or
+
+https://gromacstutorials.github.io

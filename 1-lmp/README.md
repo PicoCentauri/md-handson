@@ -186,3 +186,10 @@ the Kokkos package.
 - The trajectory should be physically equivalent to the CPU run (same physics, just
   faster computation)
 - How many times faster is the GPU? Calculate the speedup factor!
+
+
+## More Tutorials
+
+For more tutorials you can take a look at
+
+https://lammpstutorials.github.io/index.html
