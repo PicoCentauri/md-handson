@@ -1,6 +1,7 @@
 units metal
 atom_style atomic
 
+# Continue from minimized structure
 read_restart em.restart
 
 pair_style metatomic &
@@ -10,15 +11,27 @@ pair_style metatomic &
 pair_coeff * * 1 8
 
 neighbor 2.0 bin
+
+# Timestep (ps)
 timestep 0.0005
+
+# Target temperature (K)
+variable temp equal 450.0
+
+# Target pressure (bar)
+variable press equal 1.0
 
 thermo 50
 
-velocity all create 450 87287 mom yes rot yes
+# Initialize velocities from Maxwell-Boltzmann distribution at target temp
+# 87287 = random seed
+# mom yes / rot yes = remove center-of-mass motion and rotation
+velocity all create ${temp} 87287 mom yes rot yes
 
-# TODO: add thermostat and barostat (NPT)
-# fix npt all npt temp 450 450 0.1 iso 1.0 1.0 1.0
+# TODO: choose a fix to set up an npt simulation at given ${temp} and ${press}
 
+# Run 1000 timesteps (0.5 ps total)
 run 1000
 
+# Save restart file for production run
 write_restart npt.restart

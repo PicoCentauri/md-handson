@@ -25,8 +25,9 @@ pbc                     = xyz     ; periodic boundary conditions in all directio
 
 ; Electrostatics
 ; ===================================================================
-; ML potentials handle all interactions internally, but GROMACS needs this specified
-coulombtype             = Cut-off
+; ML/MM requires PME for correct electrostatics in the MM region
+; The ML region is handled by the potential, but water needs long-range electrostatics
+coulombtype             = PME
 
 ; Van der Waals
 ; ===================================================================
@@ -41,6 +42,6 @@ gen-vel                 = no
 ; Metatomic (ML potential)
 ; ===================================================================
 metatomic-active        = true   ; use ML potential
-metatomic-input-group   = System ; apply to all atoms
+metatomic-input-group   = Protein ; ML only for the peptide (ML/MM hybrid)
 metatomic-model         = model.pt
 metatomic-device        = cuda    ; use GPU

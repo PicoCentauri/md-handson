@@ -1,0 +1,60 @@
+units metal
+atom_style atomic
+
+# Continue from minimized structure
+read_restart em.restart
+
+pair_style metatomic &
+    model.pt &
+    uncertainty_threshold off
+
+pair_coeff * * 1 8
+
+neighbor 2.0 bin
+
+# Timestep (ps)
+timestep 0.0005
+
+# Target temperature (K)
+variable temp equal 450.0
+
+# Target pressure (bar)
+variable press equal 1.0
+
+thermo 50
+
+# Initialize velocities from Maxwell-Boltzmann distribution at target temp
+# 87287 = random seed
+# mom yes / rot yes = remove center-of-mass motion and rotation
+velocity all create ${temp} 87287 mom yes rot yes
+
+# NPT ensemble with Berendsen barostat and CSVR thermostat
+# fix 1: NVE integrator (base integration)
+fix 1 all nve
+
+# fix 2: Berendsen barostat for isotropic pressure coupling
+# iso 0.0 0.0 ${press} means:
+#   - Current pressure → target pressure (${press})
+#   - Relaxation timescale is implicit in Berendsen algorithm
+#
+# !!!!!!! NOT MICHELE APPROVED !!!!!!
+#
+# The Berendsen barostat does not generate a true NPT ensemble (it does not sample the
+# correct distribution), but it is simple and often used for equilibration.
+# For production at constant pressure consider using a more rigorous barostat
+# (e.g., Parrinello-Rahman).
+#
+#fix 2 all press/berendsen iso ${press} ${press} ${press}
+
+# fix 3: CSVR thermostat (canonical sampling through velocity rescaling) - Michele approved
+# ${temp} ${temp} 100.0 54324 means:
+#   - Start temp → target temp
+#   - 100.0 = damping time in timestep units
+#   - 54324 = random seed
+fix 3 all temp/csvr ${temp} ${temp} 100.0 54324
+
+# Run 1000 timesteps (0.5 ps total)
+run 1000
+
+# Save restart file for production run
+write_restart npt.restart

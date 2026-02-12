@@ -1,0 +1,21 @@
+.venv/
+model.pt
+
+# lammps
+*.lammpstrj
+*.restart
+log.lammps
+
+# gromacs
+*.cpt
+*.edr
+*.gro
+*.itp
+*.log
+*.ndx
+*.top
+*.tpr
+*.trr
+*.xvg
+\#*
+mdout.mdp

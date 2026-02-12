@@ -1,4 +1,5 @@
 # TODO: create a Kokkos GPU production input from prod.in
-# - use package kokkos and atom_style atomic/kk
+# - use package kokkos 
+# - use atom_style atomic/kk
 # - use pair_style metatomic/kk and run_style verlet/kk
 # - read_restart npt.restart

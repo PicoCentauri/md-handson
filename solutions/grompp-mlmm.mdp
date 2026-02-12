@@ -21,7 +21,8 @@ pbc                     = xyz
 
 ; Electrostatics
 ; ===================================================================
-coulombtype             = Cut-off
+; ML/MM requires PME for correct electrostatics in the MM region
+coulombtype             = PME
 
 ; Van der Waals
 ; ===================================================================
@@ -48,7 +49,8 @@ gen-seed                = 42
 
 ; Metatomic (ML potential)
 ; ===================================================================
-metatomic-active        = true
-metatomic-input-group   = System
-metatomic-model         = model.pt
-metatomic-device        = cuda
+metatomic-active            = true   ; use ML potential
+metatomic-input-group       = Protein ; ML only for the peptide (ML/MM hybrid)
+metatomic-check_consistency = false   ; skip checks for production speed
+metatomic-model             = model.pt
+metatomic-device            = cuda
