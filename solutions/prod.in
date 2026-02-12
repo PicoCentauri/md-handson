@@ -26,7 +26,7 @@ thermo 100
 
 # NVT ensemble with CSVR thermostat (no barostat = constant volume)
 fix 1 all nve
-fix 2 all temp/csvr ${temp} ${temp} 100.0 54324
+fix 2 all temp/csvr ${temp} ${temp} 0.1 54324
 
 # Write trajectory for analysis
 # dump <name> <group> <style> <frequency> <filename> <columns...>
