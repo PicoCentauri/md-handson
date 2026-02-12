@@ -20,6 +20,13 @@ versa depending how you set up your input file.
 
 For details on the LAMMPS commands refer to: https://docs.lammps.org/Commands_input.html
 
+> **Pro tip** 💡: LAMMPS has a *very* lively community. When you hit a problem and search 
+> for solutions, you'll often find answers from Axel Kohlmeyer, one of the main LAMMPS 
+> developers. His replies are legendary for being... *brutally honest*. His answers are 
+> gold, but fair warning: his tone is not for the faint-hearted. Read his comments, 
+> learn from them, but don't take it personally if he points out your mistake in capital 
+> letters! 😅
+
 ## Goals 🎯
 
 - Learn LAMMPS input structure (staged EM → NPT → production)
